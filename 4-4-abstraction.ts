@@ -8,7 +8,12 @@
     makeCoffee(shots: number): CoffeeCup;
   }
 
-  class CoffeeMachine implements CoffeeMaker {
+  interface CommercialCoffeeMaker {
+    makeCoffee(shots: number): CoffeeCup;
+    fillCoffeeBeans(beans: number): void;
+    clean(): void;
+  }
+  class CoffeeMachine implements CoffeeMaker, CommercialCoffeeMaker {
     private static BEANS_GRAMM_PER_SHOT: number = 7;
     private coffeeBeans: number = 0; // gram 단위
 
@@ -25,6 +30,10 @@
         throw new Error(`0보다 작은 커피콩은 있을 수 없어요!`);
       }
       this.coffeeBeans += beans;
+    }
+
+    clean() {
+      console.log("cleaning the machine...🚓ß");
     }
 
     private grindBeans(shots: number) {
@@ -53,11 +62,29 @@
       return this.extract(shots);
     }
   }
-  const maker: CoffeeMachine = CoffeeMachine.makeMachine(32);
-  maker.fillCoffeeBenas(32);
-  maker.makeCoffee(2);
 
-  const maker2: CoffeeMaker = CoffeeMachine.makeMachine(32);
-  // maker2.fillCoffeeBenas(32); // Can not use!
-  maker2.makeCoffee(2);
+  class AmateurUser {
+    constructor(private machine: CoffeeMaker) {}
+    makeCoffee() {
+      const coffee = this.machine.makeCoffee(2);
+      console.log(coffee);
+    }
+  }
+
+  class ProBarista {
+    constructor(private machine: CommercialCoffeeMaker) {}
+    makeCoffee() {
+      const coffee = this.machine.makeCoffee(2);
+      console.log(coffee);
+
+      this.machine.fillCoffeeBeans(45);
+      this.machine.clean();
+    }
+  }
+
+  const maker: CoffeeMachine = CoffeeMachine.makeMachine(32);
+  const amateur = new AmateurUser(maker);
+  const pro = new ProBarista(maker);
+
+  amateur.makeCoffee();
 }
